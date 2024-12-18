@@ -1,0 +1,141 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.4</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>com.programming.techie</groupId>
+    <artifactId>spring-boot-3-microservices</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>spring-boot-3-microservices</name>
+
+    <modules>
+        <module>api-gateway</module>
+        <module>identity-service</module>
+        <module>profile-service</module>
+    </modules>
+
+    <properties>
+        <java.version>21</java.version>
+        <spring-cloud.version>2023.0.1</spring-cloud.version>
+        <dockerPassword>thien12042003</dockerPassword>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>fabric8-repo</id>
+            <url>https://maven.fabric8.io</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+            <!-- Skip deploy POM project -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <skip>true</skip> <!-- Skip deploy POM project chính -->
+                </configuration>
+            </plugin>
+
+            <!-- Spring Boot Maven Plugin for Docker -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <image>
+                        <name>tsukuro/${project.artifactId}</name>
+                        <builder>dashaun/builder:tiny</builder>
+                        <publish>true</publish>
+                    </image>
+                    <docker>
+                        <publishRegistry>
+                            <username>tsukuro</username>
+                            <password>${dockerPassword}</password>
+                        </publishRegistry>
+                    </docker>
+                </configuration>
+            </plugin>
+
+            <!-- Docker Maven Plugin for all modules -->
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.45.1</version>
+                <executions>
+                    <!-- Build docker image for api-gateway -->
+                    <execution>
+                        <id>build-api-gateway-docker-image</id>
+                        <phase>package</phase> <!-- Build docker image during package phase -->
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>tsukuro/api-gateway:${project.version}</name>
+                                    <build>
+                                        <dockerFile>${project.basedir}/api-gateway/Dockerfile</dockerFile>
+                                        <contextDir>${project.basedir}/api-gateway</contextDir>
+                                    </build>
+                                </image>
+                            </images>
+                        </configuration>
+                    </execution>
+
+                    <!-- Build docker image for identity-service -->
+                    <execution>
+                        <id>build-identity-service-docker-image</id>
+                        <phase>package</phase> <!-- Build docker image during package phase -->
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>tsukuro/identity-service:${project.version}</name>
+                                    <build>
+                                        <dockerFile>${project.basedir}/identity-service/Dockerfile</dockerFile>
+                                        <contextDir>${project.basedir}/identity-service</contextDir>
+                                    </build>
+                                </image>
+                            </images>
+                        </configuration>
+                    </execution>
+
+                    <!-- Build docker image for profile-service -->
+                    <execution>
+                        <id>build-profile-service-docker-image</id>
+                        <phase>package</phase> <!-- Build docker image during package phase -->
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>tsukuro/profile-service:${project.version}</name>
+                                    <build>
+                                        <dockerFile>${project.basedir}/profile-service/Dockerfile</dockerFile>
+                                        <contextDir>${project.basedir}/profile-service</contextDir>
+                                    </build>
+                                </image>
+                            </images>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
