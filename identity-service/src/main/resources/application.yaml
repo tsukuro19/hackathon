@@ -7,7 +7,10 @@ spring:
   application:
     name: identity-service
   datasource:
-
+    url: "jdbc:mysql://avnadmin:AVNS_xrYW0bzyQxO3hPQQNKo@mysql-29176000-hoangthiennguyentran1204-2944.j.aivencloud.com:18762/defaultdb?ssl-mode=REQUIRED"
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    username: avnadmin
+    password: AVNS_xrYW0bzyQxO3hPQQNKo
   jpa:
     hibernate:
       ddl-auto: update
